@@ -18,7 +18,7 @@ public class GamesAndSets {
         final FakeEventStore inMemoryEventStream = new FakeEventStore();
 
         final Set set = new Set(inMemoryEventStream, matchId);
-        final Game game = new Game(inMemoryEventStream, matchId);
+        new Game(inMemoryEventStream, matchId);
 
         inMemoryEventStream.write(Game.streamNameFor(matchId), new PlayerOneScored());
         inMemoryEventStream.write(Game.streamNameFor(matchId), new PlayerOneScored());

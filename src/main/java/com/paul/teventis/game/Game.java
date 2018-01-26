@@ -27,28 +27,30 @@ public class Game {
             tennisScore = GameScore.LoveAll;
         }
 
-        if (PlayerOneScored.class.isInstance(e)) {
+        if (e instanceof PlayerOneScored) {
             tennisScore = tennisScore.when((PlayerOneScored) e);
             checkForGameWon();
-        } else if (PlayerTwoScored.class.isInstance(e)) {
+        }
+
+        if (e instanceof PlayerTwoScored) {
             tennisScore = tennisScore.when((PlayerTwoScored) e);
             checkForGameWon();
         }
     }
 
     private void checkForGameWon() {
-        if (GamePlayerOne.class.isInstance(tennisScore)) {
+        if (tennisScore instanceof GamePlayerOne) {
             eventStore.write(Set.streamNameFor(matchId), (GamePlayerOne) tennisScore);
         }
 
-        if (GamePlayerTwo.class.isInstance(tennisScore)) {
+        if (tennisScore instanceof GamePlayerTwo) {
             eventStore.write(Set.streamNameFor(matchId), (GamePlayerTwo) tennisScore);
         }
     }
 
     private boolean someoneHasWon() {
-        return GamePlayerOne.class.isInstance(tennisScore)
-                || GamePlayerTwo.class.isInstance(tennisScore);
+        return tennisScore instanceof GamePlayerOne
+                || tennisScore instanceof GamePlayerTwo;
     }
 
     public String score() {

@@ -7,13 +7,16 @@ interface TennisScore {
 }
 
 class GameScore implements TennisScore {
+    private static final TennisScore GamePlayerOne = new GamePlayerOne();
+    private static final TennisScore GamePlayerTwo = new GamePlayerTwo();
+
     private static class AdvantagePlayerOne implements TennisScore {
         public String toString() {
             return "advantage player one";
         }
 
         public TennisScore when(final PlayerOneScored e) {
-            return new GamePlayerOne();
+            return GameScore.GamePlayerOne;
         }
 
         public TennisScore when(final PlayerTwoScored e) {
@@ -28,7 +31,7 @@ class GameScore implements TennisScore {
         }
 
         public TennisScore when(final PlayerTwoScored e) {
-            return new GamePlayerTwo();
+            return GameScore.GamePlayerTwo;
         }
 
         public TennisScore when(final PlayerOneScored e) {
@@ -38,8 +41,7 @@ class GameScore implements TennisScore {
 
     // ugh can't instantiate the items that cycle from deuce through advantage to game because of the cycle
     // :(
-    private static final TennisScore GamePlayerOne = new GamePlayerOne();
-    private static final TennisScore GamePlayerTwo = new GamePlayerTwo();
+
     private static final TennisScore AdvantagePlayerOne = new AdvantagePlayerOne();
     private static final TennisScore AdvantagePlayerTwo = new AdvantagePlayerTwo();
 
@@ -50,14 +52,14 @@ class GameScore implements TennisScore {
     private static final TennisScore FortyFifteen = new GameScore("40-15", GamePlayerOne, FortyThirty);
     private static final TennisScore LoveForty = new GameScore("love-40", FifteenForty, GamePlayerTwo);
     private static final TennisScore FortyLove = new GameScore("40-love", GamePlayerOne, FortyFifteen);
-    private static final TennisScore ThirtyThirty = new GameScore("30-30", FortyThirty, ThirtyForty);
-    private static final TennisScore ThirtyFifteen = new GameScore("30-15", FortyFifteen, ThirtyThirty);
-    private static final TennisScore FifteenThirty = new GameScore("15-30", ThirtyThirty, FifteenForty);
+    private static final TennisScore ThirtyAll = new GameScore("30-all", FortyThirty, ThirtyForty);
+    private static final TennisScore ThirtyFifteen = new GameScore("30-15", FortyFifteen, ThirtyAll);
+    private static final TennisScore FifteenThirty = new GameScore("15-30", ThirtyAll, FifteenForty);
     private static final TennisScore LoveThirty = new GameScore("love-30", FifteenThirty, LoveForty);
     private static final TennisScore ThirtyLove = new GameScore("30-love", FortyLove, ThirtyFifteen);
-    private static final TennisScore FifteenFifteen = new GameScore("15-15", ThirtyFifteen, FifteenThirty);
-    private static final TennisScore LoveFifteen = new GameScore("love-15", FifteenFifteen, LoveThirty);
-    private static final TennisScore FifteenLove = new GameScore("15-love", ThirtyLove, FifteenFifteen);
+    private static final TennisScore FifteenAll = new GameScore("15-all", ThirtyFifteen, FifteenThirty);
+    private static final TennisScore LoveFifteen = new GameScore("love-15", FifteenAll, LoveThirty);
+    private static final TennisScore FifteenLove = new GameScore("15-love", ThirtyLove, FifteenAll);
     static final TennisScore LoveAll = new GameScore("love all", FifteenLove, LoveFifteen);
 
     private final TennisScore onPlayerOneScored;
