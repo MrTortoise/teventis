@@ -6,306 +6,83 @@ interface TennisScore {
     TennisScore when(PlayerTwoScored e);
 }
 
-class LoveAll implements TennisScore {
+class GameScore implements TennisScore {
+    private static class AdvantagePlayerOne implements TennisScore {
+        public String toString() {
+            return "advantage player one";
+        }
 
-    @Override
-    public String toString() {
-        return "love all";
+        public TennisScore when(final PlayerOneScored e) {
+            return new GamePlayerOne();
+        }
+
+        public TennisScore when(final PlayerTwoScored e) {
+            return GameScore.Deuce;
+        }
+    }
+
+    private static class AdvantagePlayerTwo implements TennisScore {
+        @Override
+        public String toString() {
+            return "advantage player two";
+        }
+
+        public TennisScore when(final PlayerTwoScored e) {
+            return new GamePlayerTwo();
+        }
+
+        public TennisScore when(final PlayerOneScored e) {
+            return GameScore.Deuce;
+        }
+    }
+
+    // ugh can't instantiate the items that cycle from deuce through advantage to game because of the cycle
+    // :(
+    private static final TennisScore GamePlayerOne = new GamePlayerOne();
+    private static final TennisScore GamePlayerTwo = new GamePlayerTwo();
+    private static final TennisScore AdvantagePlayerOne = new AdvantagePlayerOne();
+    private static final TennisScore AdvantagePlayerTwo = new AdvantagePlayerTwo();
+
+    private static final TennisScore Deuce = new GameScore("deuce", AdvantagePlayerOne, AdvantagePlayerTwo);
+    private static final TennisScore ThirtyForty = new GameScore("30-40", Deuce, GamePlayerTwo);
+    private static final TennisScore FortyThirty = new GameScore("40-30", GamePlayerOne, Deuce);
+    private static final TennisScore FifteenForty = new GameScore("15-40", ThirtyForty, GamePlayerTwo);
+    private static final TennisScore FortyFifteen = new GameScore("40-15", GamePlayerOne, FortyThirty);
+    private static final TennisScore LoveForty = new GameScore("love-40", FifteenForty, GamePlayerTwo);
+    private static final TennisScore FortyLove = new GameScore("40-love", GamePlayerOne, FortyFifteen);
+    private static final TennisScore ThirtyThirty = new GameScore("30-30", FortyThirty, ThirtyForty);
+    private static final TennisScore ThirtyFifteen = new GameScore("30-15", FortyFifteen, ThirtyThirty);
+    private static final TennisScore FifteenThirty = new GameScore("15-30", ThirtyThirty, FifteenForty);
+    private static final TennisScore LoveThirty = new GameScore("love-30", FifteenThirty, LoveForty);
+    private static final TennisScore ThirtyLove = new GameScore("30-love", FortyLove, ThirtyFifteen);
+    private static final TennisScore FifteenFifteen = new GameScore("15-15", ThirtyFifteen, FifteenThirty);
+    private static final TennisScore LoveFifteen = new GameScore("love-15", FifteenFifteen, LoveThirty);
+    private static final TennisScore FifteenLove = new GameScore("15-love", ThirtyLove, FifteenFifteen);
+    static final TennisScore LoveAll = new GameScore("love all", FifteenLove, LoveFifteen);
+
+    private final TennisScore onPlayerOneScored;
+    private final TennisScore onPlayerTwoScored;
+    private final String description;
+
+    private GameScore(String description, TennisScore onPlayerOneScored, TennisScore onPlayerTwoScored) {
+        this.description = description;
+        this.onPlayerOneScored = onPlayerOneScored;
+        this.onPlayerTwoScored = onPlayerTwoScored;
     }
 
     @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FifteenLove();
+    public TennisScore when(PlayerOneScored e) {
+        return onPlayerOneScored;
     }
 
     @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new LoveFifteen();
-    }
-}
-
-class FifteenLove implements TennisScore {
-    @Override
-    public String toString() {
-        return "15-love";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new ThirtyLove();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new FifteenFifteen();
-    }
-}
-
-class FifteenFifteen implements TennisScore {
-    @Override
-    public String toString() {
-        return "15-15";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new ThirtyFifteen();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new FifteenThirty();
-    }
-}
-
-class FifteenThirty implements TennisScore {
-    @Override
-    public String toString() {
-        return "15-30";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new ThirtyThirty();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new FifteenForty();
-    }
-}
-
-class FifteenForty implements TennisScore {
-    @Override
-    public String toString() {
-        return "15-40";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new ThirtyForty();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new GamePlayerTwo();
-    }
-}
-
-class ThirtyForty implements TennisScore {
-    @Override
-    public String toString() {
-        return "30-40";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new Deuce();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new GamePlayerTwo();
-    }
-}
-
-class ThirtyThirty implements TennisScore {
-    @Override
-    public String toString() {
-        return "30-30";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FortyThirty();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new ThirtyForty();
-    }
-}
-
-class FortyThirty implements TennisScore {
-    @Override
-    public String toString() {
-        return "40-30";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new GamePlayerOne();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new Deuce();
-    }
-}
-
-class ThirtyFifteen implements TennisScore {
-
-    @Override
-    public String toString() {
-        return "30-15";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FortyFifteen();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new ThirtyThirty();
-    }
-}
-
-class FortyFifteen implements TennisScore {
-    @Override
-    public String toString() {
-        return "40-15";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new GamePlayerOne();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new FortyThirty();
-    }
-}
-
-class ThirtyLove implements TennisScore {
-
-    @Override
-    public String toString() {
-        return "30-love";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FortyLove();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new ThirtyFifteen();
-    }
-}
-
-class FortyLove implements TennisScore {
-    @Override
-    public String toString() {
-        return "40-love";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new GamePlayerOne();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new FortyFifteen();
-    }
-}
-
-class LoveFifteen implements TennisScore {
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FifteenFifteen();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new LoveThirty();
+    public TennisScore when(PlayerTwoScored e) {
+        return onPlayerTwoScored;
     }
 
     @Override
     public String toString() {
-        return "love-15";
-    }
-}
-
-class LoveThirty implements TennisScore {
-    @Override
-    public String toString() {
-        return "love-30";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FifteenThirty();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new LoveForty();
-    }
-}
-
-class LoveForty implements TennisScore {
-    @Override
-    public String toString() {
-        return "love-40";
-    }
-
-    @Override
-    public TennisScore when(final PlayerOneScored e) {
-        return new FifteenForty();
-    }
-
-    @Override
-    public TennisScore when(final PlayerTwoScored e) {
-        return new GamePlayerTwo();
-    }
-}
-
-class Deuce implements TennisScore {
-    @Override
-    public String toString() {
-        return "deuce";
-    }
-
-    public AdvantagePlayerOne when(final PlayerOneScored e) {
-        return new AdvantagePlayerOne();
-    }
-
-    public AdvantagePlayerTwo when(final PlayerTwoScored playerTwoScored) {
-        return new AdvantagePlayerTwo();
-    }
-}
-
-class AdvantagePlayerOne implements TennisScore {
-    public String toString() {
-        return "advantage player one";
-    }
-
-    public GamePlayerOne when(final PlayerOneScored e) {
-        return new GamePlayerOne();
-    }
-
-    public Deuce when(final PlayerTwoScored e) {
-        return new Deuce();
-    }
-}
-
-class AdvantagePlayerTwo implements TennisScore {
-    @Override
-    public String toString() {
-        return "advantage player two";
-    }
-
-    public GamePlayerTwo when(final PlayerTwoScored e) {
-        return new GamePlayerTwo();
-    }
-
-    public Deuce when(final PlayerOneScored e) {
-        return new Deuce();
+        return description;
     }
 }
 

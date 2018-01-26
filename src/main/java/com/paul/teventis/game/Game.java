@@ -8,7 +8,7 @@ public class Game {
 
     private final EventStore eventStore;
     private final String matchId;
-    private TennisScore tennisScore = new LoveAll();
+    private TennisScore tennisScore = GameScore.LoveAll;
 
     public Game(final EventStore eventStore, final String matchId) {
         this.eventStore = eventStore;
@@ -24,7 +24,7 @@ public class Game {
 
     public void when(Event e) {
         if (someoneHasWon()) {
-            tennisScore = new LoveAll();
+            tennisScore = GameScore.LoveAll;
         }
 
         if (PlayerOneScored.class.isInstance(e)) {

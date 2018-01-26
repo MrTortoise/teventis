@@ -77,11 +77,12 @@ public class StandardGameIsScored {
                                 new PlayerOneScored(),
                                 new PlayerOneScored(),
                                 new PlayerOneScored(),
-                                new PlayerOneScored(), //game is won
+                                new PlayerOneScored(), //game player one
                                 new PlayerTwoScored(),
                                 new PlayerTwoScored(),
                                 new PlayerTwoScored(),
-                                new PlayerTwoScored())},
+                                new PlayerTwoScored()) // game player two
+                        },
                 }
         );
     }
