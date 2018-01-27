@@ -28,17 +28,17 @@ public class Game {
         }
 
         if (e instanceof PlayerOneScored) {
-            tennisScore = tennisScore.when((PlayerOneScored) e);
-            checkForGameWon();
+            tennisScore = tennisScore.pointPlayerOne();
         }
 
         if (e instanceof PlayerTwoScored) {
-            tennisScore = tennisScore.when((PlayerTwoScored) e);
-            checkForGameWon();
+            tennisScore = tennisScore.pointPlayerTwo();
         }
+
+        checkIfTheLastPointMeansTheGameWasWon();
     }
 
-    private void checkForGameWon() {
+    private void checkIfTheLastPointMeansTheGameWasWon() {
         if (tennisScore instanceof GamePlayerOne) {
             eventStore.write(Set.streamNameFor(matchId), (GamePlayerOne) tennisScore);
         }

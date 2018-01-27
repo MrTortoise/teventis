@@ -2,7 +2,7 @@ package com.paul.teventis.game;
 
 import com.paul.teventis.events.Event;
 
-public class GamePlayerOne implements TennisScore, Event {
+public class GamePlayerOne implements TennisScore, GameWon {
 
     public GamePlayerOne() {
     }
@@ -13,13 +13,13 @@ public class GamePlayerOne implements TennisScore, Event {
     }
 
     @Override
-    public TennisScore when(final PlayerOneScored e) {
+    public TennisScore pointPlayerOne() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }
 
     @Override
-    public TennisScore when(final PlayerTwoScored e) {
+    public TennisScore pointPlayerTwo() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }

@@ -1,9 +1,8 @@
 package com.paul.teventis.game;
 
 interface TennisScore {
-
-    TennisScore when(PlayerOneScored e);
-    TennisScore when(PlayerTwoScored e);
+    TennisScore pointPlayerOne();
+    TennisScore pointPlayerTwo();
 }
 
 class GameScore implements TennisScore {
@@ -15,11 +14,11 @@ class GameScore implements TennisScore {
             return "advantage player one";
         }
 
-        public TennisScore when(final PlayerOneScored e) {
+        public TennisScore pointPlayerOne() {
             return GameScore.GamePlayerOne;
         }
 
-        public TennisScore when(final PlayerTwoScored e) {
+        public TennisScore pointPlayerTwo() {
             return GameScore.Deuce;
         }
     }
@@ -30,11 +29,11 @@ class GameScore implements TennisScore {
             return "advantage player two";
         }
 
-        public TennisScore when(final PlayerTwoScored e) {
+        public TennisScore pointPlayerTwo() {
             return GameScore.GamePlayerTwo;
         }
 
-        public TennisScore when(final PlayerOneScored e) {
+        public TennisScore pointPlayerOne() {
             return GameScore.Deuce;
         }
     }
@@ -73,12 +72,12 @@ class GameScore implements TennisScore {
     }
 
     @Override
-    public TennisScore when(PlayerOneScored e) {
+    public TennisScore pointPlayerOne() {
         return onPlayerOneScored;
     }
 
     @Override
-    public TennisScore when(PlayerTwoScored e) {
+    public TennisScore pointPlayerTwo() {
         return onPlayerTwoScored;
     }
 

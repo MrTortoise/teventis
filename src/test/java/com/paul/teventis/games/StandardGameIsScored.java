@@ -26,10 +26,10 @@ public class StandardGameIsScored {
     private String expectedScore;
 
     // love -> 15 -> 30 -> 40
-    // when no players have scored... love-all
-    // when player one has scored... 15-love
-    // when player two has scored... love-15
-    // when both have scored three times... deuce
+    // pointPlayerTwo no players have scored... love-all
+    // pointPlayerTwo player one has scored... 15-love
+    // pointPlayerTwo player two has scored... love-15
+    // pointPlayerTwo both have scored three times... deuce
 
     @Parameterized.Parameters(name = "Standard Game: {index}")
     public static Collection<Object[]> data() {
