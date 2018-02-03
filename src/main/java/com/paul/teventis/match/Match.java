@@ -2,6 +2,7 @@ package com.paul.teventis.match;
 
 import com.paul.teventis.events.Event;
 import com.paul.teventis.events.EventStore;
+import com.paul.teventis.set.Set;
 import com.paul.teventis.set.SetPlayerOne;
 import com.paul.teventis.set.SetPlayerTwo;
 
@@ -16,7 +17,7 @@ public class Match {
         this.eventStore = eventStore;
         this.matchId = matchId;
 
-        final String stream = streamNameFor(matchId);
+        final String stream = Set.streamNameFor(matchId);
         this.eventStore.readAll(stream).forEach(this::when);
         this.eventStore.subscribe(stream, this::when);
     }

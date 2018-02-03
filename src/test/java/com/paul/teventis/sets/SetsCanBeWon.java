@@ -5,6 +5,7 @@ import com.paul.teventis.FakeEventStore;
 import com.paul.teventis.events.Event;
 import com.paul.teventis.game.GamePlayerOne;
 import com.paul.teventis.game.GamePlayerTwo;
+import com.paul.teventis.match.Match;
 import com.paul.teventis.set.Set;
 import com.paul.teventis.set.SetPlayerOne;
 import com.paul.teventis.set.SetPlayerTwo;
@@ -33,7 +34,7 @@ public class SetsCanBeWon {
         final Set set = new Set(inMemoryEventStream, matchId);
         assertThat(set.score()).isEqualTo("6-0");
 
-        final Event event = inMemoryEventStream.readLast("match-" + matchId);
+        final Event event = inMemoryEventStream.readLast(Match.streamNameFor(matchId));
         assertThat(event).isInstanceOf(SetPlayerOne.class);
     }
 
@@ -58,7 +59,7 @@ public class SetsCanBeWon {
 
         assertThat(set.score()).isEqualTo("6-0");
 
-        final Event event = inMemoryEventStream.readLast("match-" + matchId);
+        final Event event = inMemoryEventStream.readLast(Match.streamNameFor(matchId));
         assertThat(event).isInstanceOf(SetPlayerOne.class);
     }
 
@@ -79,7 +80,7 @@ public class SetsCanBeWon {
         final Set set = new Set(inMemoryEventStream, matchId);
         assertThat(set.score()).isEqualTo("0-6");
 
-        final Event event = inMemoryEventStream.readLast("match-" + matchId);
+        final Event event = inMemoryEventStream.readLast(Match.streamNameFor(matchId));
         assertThat(event).isInstanceOf(SetPlayerTwo.class);
     }
 
@@ -105,14 +106,14 @@ public class SetsCanBeWon {
         final Set set = new Set(inMemoryEventStream, matchId);
         assertThat(set.score()).isEqualTo("5-6");
 
-        final List<Event> matchEvents = inMemoryEventStream.readAll("match-" + matchId);
+        final List<Event> matchEvents = inMemoryEventStream.readAll(Match.streamNameFor(matchId));
         assertThat(matchEvents).isEmpty();
 
         inMemoryEventStream.write(Set.streamNameFor(matchId), new GamePlayerTwo());
 
         assertThat(set.score()).isEqualTo("5-7");
 
-        final Event event = inMemoryEventStream.readLast("match-" + matchId);
+        final Event event = inMemoryEventStream.readLast(Match.streamNameFor(matchId));
         assertThat(event).isInstanceOf(SetPlayerTwo.class);
     }
 
@@ -138,14 +139,14 @@ public class SetsCanBeWon {
         final Set set = new Set(inMemoryEventStream, matchId);
         assertThat(set.score()).isEqualTo("6-5");
 
-        final List<Event> matchEvents = inMemoryEventStream.readAll("match-" + matchId);
+        final List<Event> matchEvents = inMemoryEventStream.readAll(Match.streamNameFor(matchId));
         assertThat(matchEvents).isEmpty();
 
         inMemoryEventStream.write(Set.streamNameFor(matchId), new GamePlayerOne());
 
         assertThat(set.score()).isEqualTo("7-5");
 
-        final Event event = inMemoryEventStream.readLast("match-" + matchId);
+        final Event event = inMemoryEventStream.readLast(Match.streamNameFor(matchId));
         assertThat(event).isInstanceOf(SetPlayerOne.class);
     }
 }

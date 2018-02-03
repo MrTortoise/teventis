@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class FakeEventStore implements EventStore {
     private final Map<String, List<Event>> eventStreams = new HashMap<>();
 
-    private final Map<String, Consumer<Event>> subscriptions = new HashMap<>();
+    private final Map<String, List<Consumer<Event>>> subscriptions = new HashMap<>();
 
     @Override
     public ImmutableList<Event> readAll(final String streamName) {
@@ -32,7 +32,7 @@ public class FakeEventStore implements EventStore {
         final List<Event> events = eventStreams.getOrDefault(stream, new ArrayList<>());
         events.add(e);
         eventStreams.put(stream, events);
-        subscriptions.getOrDefault(stream, x -> {}).accept(e);
+        subscriptions.getOrDefault(stream, ImmutableList.of(x -> {})).forEach(x -> x.accept(e));
     }
 
     @Override
@@ -42,6 +42,9 @@ public class FakeEventStore implements EventStore {
 
     @Override
     public void subscribe(final String stream, final Consumer<Event> subscription) {
-        this.subscriptions.put(stream, subscription);
+        this.subscriptions.putIfAbsent(stream, new ArrayList<>());
+        final List<Consumer<Event>> subscribers = this.subscriptions.get(stream);
+        subscribers.add(subscription);
+        this.subscriptions.put(stream, subscribers);
     }
 }

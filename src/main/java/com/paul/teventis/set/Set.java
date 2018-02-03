@@ -2,6 +2,7 @@ package com.paul.teventis.set;
 
 import com.paul.teventis.events.*;
 import com.paul.teventis.game.*;
+import com.paul.teventis.match.Match;
 
 public class Set {
 
@@ -45,13 +46,13 @@ public class Set {
         final boolean playerOneHasWonEnoughGames = gamesPlayerOne >= 6;
         final boolean playerTwoIsAtLeastTwoPointsBehind = gamesPlayerOne - gamesPlayerTwo >= 2;
         if (playerOneHasWonEnoughGames && playerTwoIsAtLeastTwoPointsBehind) {
-            eventStore.write("match-"+matchId, new SetPlayerOne(score()));
+            eventStore.write(Match.streamNameFor(matchId), new SetPlayerOne(score()));
         }
 
         final boolean playerTwoHasEnoughPoints = gamesPlayerTwo >= 6;
         final boolean playerOneIsAtLeastTwoPointsBehind = gamesPlayerTwo - gamesPlayerOne >= 2;
         if (playerTwoHasEnoughPoints && playerOneIsAtLeastTwoPointsBehind) {
-            eventStore.write("match-"+matchId, new SetPlayerTwo(score()));
+            eventStore.write(Match.streamNameFor(matchId), new SetPlayerTwo(score()));
         }
     }
 
