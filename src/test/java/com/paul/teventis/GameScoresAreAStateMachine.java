@@ -1,4 +1,4 @@
-package com.paul.teventis.scoring;
+package com.paul.teventis;
 
 import com.google.common.collect.ImmutableList;
 import com.paul.teventis.*;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class StandardGameIsScored {
+public class GameScoresAreAStateMachine {
     private static final List<Event> threePointsEach = Arrays.asList(
             new PlayerOneScored(), new PlayerOneScored(), new PlayerOneScored(),
             new PlayerTwoScored(), new PlayerTwoScored(), new PlayerTwoScored());
@@ -92,7 +92,7 @@ public class StandardGameIsScored {
         return Stream.of(a, b).flatMap(List::stream).collect(Collectors.toList());
     }
 
-    public StandardGameIsScored(final String expectedScore, final List<Event> playersScoringEvents) {
+    public GameScoresAreAStateMachine(final String expectedScore, final List<Event> playersScoringEvents) {
         //parameters are injected here...
         this.playersScoringEvents = playersScoringEvents;
         this.expectedScore = expectedScore;

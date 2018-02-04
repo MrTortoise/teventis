@@ -4,11 +4,13 @@ import com.paul.teventis.events.Event;
 import com.paul.teventis.events.EventStore;
 import com.paul.teventis.game.Game;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class Match {
 
     private final Game game;
+    private final Set set;
 
     public Match(EventStore eventStore, String matchId) {
 
@@ -17,6 +19,8 @@ public class Match {
         eventStore.subscribe(stream, this::when);
 
         this.game = new Game();
+        this.set = new Set(game);
+
     }
 
     private void when(Event event) {
@@ -29,5 +33,9 @@ public class Match {
 
     public void subscribeToGameScore(Consumer<String> subscription) {
         game.subscribeToScore(subscription);
+    }
+
+    public void subscribeToWinningScores(Consumer<List<String>> subscription) {
+        this.set.subscribeToSetScores(subscription);
     }
 }
