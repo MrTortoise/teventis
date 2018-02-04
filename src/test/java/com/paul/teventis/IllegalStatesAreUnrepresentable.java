@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class TennisScoreTests {
+public class IllegalStatesAreUnrepresentable {
     @Test
     public void playerOneCannotScoreAfterTheyWinTheGame() {
         final Throwable ex = catchThrowable(() -> new GamePlayerOne().pointPlayerOne());

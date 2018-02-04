@@ -1,26 +1,15 @@
 package com.paul.teventis.game;
 
 import com.paul.teventis.events.Event;
-import com.paul.teventis.events.EventStore;
-import com.paul.teventis.set.Set;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class Game {
 
-    private final EventStore eventStore;
-    private final String matchId;
     private TennisScore tennisScore = GameScore.LoveAll;
-
-    public Game(final EventStore eventStore, final String matchId) {
-        this.eventStore = eventStore;
-        this.matchId = matchId;
-
-        this.eventStore.readAll(streamNameFor(matchId)).forEach(this::when);
-        this.eventStore.subscribe(streamNameFor(matchId), this::when);
-    }
-
-    public static String streamNameFor(String matchId) {
-        return "games-"+matchId;
-    }
+    private List<Consumer<String>> subscriptions = new ArrayList<>();
 
     public void when(Event e) {
         if (someoneHasWon()) {
@@ -35,17 +24,11 @@ public class Game {
             tennisScore = tennisScore.pointPlayerTwo();
         }
 
-        checkIfTheLastPointMeansTheGameWasWon();
+        updateSubscribers();
     }
 
-    private void checkIfTheLastPointMeansTheGameWasWon() {
-        if (tennisScore instanceof GamePlayerOne) {
-            eventStore.write(Set.streamNameFor(matchId), (GamePlayerOne) tennisScore);
-        }
-
-        if (tennisScore instanceof GamePlayerTwo) {
-            eventStore.write(Set.streamNameFor(matchId), (GamePlayerTwo) tennisScore);
-        }
+    private void updateSubscribers() {
+        subscriptions.forEach(sub -> sub.accept(this.tennisScore.toString()));
     }
 
     private boolean someoneHasWon() {
@@ -53,7 +36,8 @@ public class Game {
                 || tennisScore instanceof GamePlayerTwo;
     }
 
-    public String score() {
-        return this.tennisScore.toString();
+    public void subscribeToScore(Consumer<String> subscription) {
+        this.subscriptions.add(subscription);
+        updateSubscribers();
     }
 }

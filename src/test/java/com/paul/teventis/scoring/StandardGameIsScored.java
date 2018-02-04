@@ -1,4 +1,4 @@
-package com.paul.teventis.games;
+package com.paul.teventis.scoring;
 
 import com.google.common.collect.ImmutableList;
 import com.paul.teventis.*;
@@ -24,6 +24,7 @@ public class StandardGameIsScored {
 
     private List<Event> playersScoringEvents;
     private String expectedScore;
+    private String reportedScore = "";
 
     // love -> 15 -> 30 -> 40
     // pointPlayerTwo no players have scored... love-all
@@ -101,10 +102,12 @@ public class StandardGameIsScored {
     public void PlayersWinningPointsChangesTheGamesScore() {
         final FakeEventStore inMemoryEventStream = new FakeEventStore();
 
-        final Game game = new Game(inMemoryEventStream, "arbitraryGuid");
+        final Game game = new Game();
+
+        game.subscribeToScore(s -> this.reportedScore = s);
+
         playersScoringEvents.forEach(game::when);
-        final String score = game.score();
-        assertThat(score).isEqualTo(expectedScore);
+        assertThat(this.reportedScore).isEqualTo(expectedScore);
     }
 }
 
