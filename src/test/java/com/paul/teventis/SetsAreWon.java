@@ -11,6 +11,46 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/*
+                        0-0
+                       /   \
+                    1-0     0-1
+                   /   \   /   \
+                2-0     1-1     0-2
+               /  \    /   \   /   \
+            3-0     2-1     1-2     0-3
+           /   \   /  \    /   \   /   \
+        4-0     3-1     2-2     1-3     0-4
+       /   \   /   \   /   \   /   \   /   \
+     5-0    4-1     3-2     2-3     1-4    0-5
+    /   \  /   \   /   \   /   \   /   \  /   \
+ *6-0*   5-1    4-2     3-3     2-4    1-5    *0-6*
+        /   \  /   \   /   \   /   \  /   \
+    *6-1*    5-2    4-3     3-4    2-5     *1-6*
+            /   \  /   \   /   \  /   \
+         *6-2*  5-3     4-4     3-5   *2-6*
+               /   \   /   \   /   \
+          *6-3*     5-4     4-5     *3-6*
+                   /   \   /   \
+              *6-4*     5-5     *4-6*
+                       /   \
+                    6-5     5-6
+                   /   \   /   \
+              *7-5*     6-6     *5-7*
+                       /   \
+                    7-6     6-7
+                   /   \   /  \
+               *8-6*    7-7    *6-8*
+                       /   \
+                  repeating forever
+
+      sets are a state machine but the possible states carry on forever
+
+      all you need to do is:
+        track sets won,
+        whether anyone has won 6 or more
+        whether the person with the max score is 2 ahead
+ */
 public class SetsAreWon {
     private List<SetScore> reportedSetScore;
 
