@@ -1,19 +1,17 @@
 package com.paul.teventis.game;
 
-public class GamePlayerTwo implements TennisScore, GameWon {
+public class GamePlayerTwo implements GameWon {
     @Override
     public String toString() {
         return "Game player two";
     }
 
-    @Override
-    public TennisScore pointPlayerOne() {
+    public GameScore pointPlayerOne() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }
 
-    @Override
-    public TennisScore pointPlayerTwo() {
+    public GameScore pointPlayerTwo() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }

@@ -1,16 +1,17 @@
 package com.paul.teventis;
 
 import com.google.common.collect.ImmutableList;
-import com.paul.teventis.*;
 import com.paul.teventis.events.Event;
+import com.paul.teventis.game.Game;
 import com.paul.teventis.game.PlayerOneScored;
 import com.paul.teventis.game.PlayerTwoScored;
-import com.paul.teventis.game.Game;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,8 +101,6 @@ public class GameScoresAreAStateMachine {
 
     @Test
     public void PlayersWinningPointsChangesTheGamesScore() {
-        final FakeEventStore inMemoryEventStream = new FakeEventStore();
-
         final Game game = new Game();
 
         game.subscribeToScore(s -> this.reportedScore = s);

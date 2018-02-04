@@ -1,6 +1,6 @@
 package com.paul.teventis.game;
 
-public class GamePlayerOne implements TennisScore, GameWon {
+public class GamePlayerOne implements GameWon {
 
     public GamePlayerOne() {
     }
@@ -10,14 +10,12 @@ public class GamePlayerOne implements TennisScore, GameWon {
         return "Game player one";
     }
 
-    @Override
-    public TennisScore pointPlayerOne() {
+    public GameScore pointPlayerOne() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }
 
-    @Override
-    public TennisScore pointPlayerTwo() {
+    public GameScore pointPlayerTwo() {
         //ugh
         throw new CannotScoreAfterGameIsWon();
     }

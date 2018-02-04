@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 
 public class Game {
 
-    private TennisScore tennisScore = GameScore.LoveAll;
+    private GameScore tennisScore = GameScore.LoveAll;
     private List<Consumer<String>> subscriptions = new ArrayList<>();
 
     public void when(Event e) {
-        if (someoneHasWon()) {
+        if (tennisScore.someoneHasWon()) {
             tennisScore = GameScore.LoveAll;
         }
 
@@ -29,11 +29,6 @@ public class Game {
 
     private void updateSubscribers() {
         subscriptions.forEach(sub -> sub.accept(this.tennisScore.toString()));
-    }
-
-    private boolean someoneHasWon() {
-        return tennisScore instanceof GamePlayerOne
-                || tennisScore instanceof GamePlayerTwo;
     }
 
     public void subscribeToScore(Consumer<String> subscription) {

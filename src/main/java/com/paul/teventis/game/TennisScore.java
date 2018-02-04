@@ -1,89 +1,110 @@
 package com.paul.teventis.game;
 
-interface TennisScore {
-    TennisScore pointPlayerOne();
-    TennisScore pointPlayerTwo();
-}
+import com.google.common.collect.ImmutableMap;
 
-class GameScore implements TennisScore {
-    private static final TennisScore GamePlayerOne = new GamePlayerOne();
-    private static final TennisScore GamePlayerTwo = new GamePlayerTwo();
 
-    private static class AdvantagePlayerOne implements TennisScore {
-        public String toString() {
-            return "advantage player one";
-        }
+/*
 
-        public TennisScore pointPlayerOne() {
-            return GameScore.GamePlayerOne;
-        }
+                        0-0
+                       /   \
+                     15-0  0-15
+                    /   \ /    \
+                30-0   15-15    0-30
+               /   \   /    \   /   \
+            40-0    30-15  15-30    0-40
+           /   \        \  /       /    \
+         GP1    40-15   30-all    15-40  GP2
+                /   \   /   \   /     \
+              GP1   40-30   30-40      GP2
+                    /   \  /    \
+                 GP1    deuce    GP2
+                       //   \\
+                      AP1   AP2
+                     /         \
+                   GP1          GP2
+ */
+class GameScore {
 
-        public TennisScore pointPlayerTwo() {
-            return GameScore.Deuce;
-        }
-    }
+    private static final ImmutableMap<String, String> playerOneScoreTransitions = ImmutableMap.<String, String>builder()
+                                                                .put("love all", "15-love")
+                                                                .put("love-15", "15-all")
+                                                                .put("15-love", "30-love")
+                                                                .put("30-love", "40-love")
+                                                                .put("15-all", "30-15")
+                                                                .put("love-30", "15-30")
+                                                                .put("40-love", "Game player one")
+                                                                .put("30-15", "40-15")
+                                                                .put("15-30", "30-all")
+                                                                .put("love-40", "15-40")
+                                                                .put("40-15", "Game player one")
+                                                                .put("30-all", "40-30")
+                                                                .put("15-40", "30-40")
+                                                                .put("40-30", "Game player one")
+                                                                .put("30-40", "deuce")
+                                                                .put("deuce", "advantage player one")
+                                                                .put("advantage player one", "Game player one")
+                                                                .put("advantage player two", "deuce")
+                                                                .build();
 
-    private static class AdvantagePlayerTwo implements TennisScore {
-        @Override
-        public String toString() {
-            return "advantage player two";
-        }
+    private static final ImmutableMap<String, String> playerTwoScoreTransitions = ImmutableMap.<String, String>builder()
+                                                                .put("love all", "love-15")
+                                                                .put("love-15", "love-30")
+                                                                .put("15-love", "15-all")
+                                                                .put("30-love", "30-15")
+                                                                .put("15-all", "15-30")
+                                                                .put("love-30", "love-40")
+                                                                .put("40-love", "40-15")
+                                                                .put("30-15", "30-all")
+                                                                .put("15-30", "15-40")
+                                                                .put("love-40", "Game player two")
+                                                                .put("40-15", "40-30")
+                                                                .put("30-all", "30-40")
+                                                                .put("15-40", "Game player two")
+                                                                .put("40-30", "deuce")
+                                                                .put("30-40", "Game player two")
+                                                                .put("deuce", "advantage player two")
+                                                                .put("advantage player one", "deuce")
+                                                                .put("advantage player two", "Game player two")
+                                                                .build();
 
-        public TennisScore pointPlayerTwo() {
-            return GameScore.GamePlayerTwo;
-        }
+    public static GameScore LoveAll = new GameScore("love all");
 
-        public TennisScore pointPlayerOne() {
-            return GameScore.Deuce;
-        }
-    }
-
-    // ugh can't instantiate the items that cycle from deuce through advantage to game because of the cycle
-    // :(
-
-    private static final TennisScore AdvantagePlayerOne = new AdvantagePlayerOne();
-    private static final TennisScore AdvantagePlayerTwo = new AdvantagePlayerTwo();
-
-    private static final TennisScore Deuce = new GameScore("deuce", AdvantagePlayerOne, AdvantagePlayerTwo);
-    private static final TennisScore ThirtyForty = new GameScore("30-40", Deuce, GamePlayerTwo);
-    private static final TennisScore FortyThirty = new GameScore("40-30", GamePlayerOne, Deuce);
-    private static final TennisScore FifteenForty = new GameScore("15-40", ThirtyForty, GamePlayerTwo);
-    private static final TennisScore FortyFifteen = new GameScore("40-15", GamePlayerOne, FortyThirty);
-    private static final TennisScore LoveForty = new GameScore("love-40", FifteenForty, GamePlayerTwo);
-    private static final TennisScore FortyLove = new GameScore("40-love", GamePlayerOne, FortyFifteen);
-    private static final TennisScore ThirtyAll = new GameScore("30-all", FortyThirty, ThirtyForty);
-    private static final TennisScore ThirtyFifteen = new GameScore("30-15", FortyFifteen, ThirtyAll);
-    private static final TennisScore FifteenThirty = new GameScore("15-30", ThirtyAll, FifteenForty);
-    private static final TennisScore LoveThirty = new GameScore("love-30", FifteenThirty, LoveForty);
-    private static final TennisScore ThirtyLove = new GameScore("30-love", FortyLove, ThirtyFifteen);
-    private static final TennisScore FifteenAll = new GameScore("15-all", ThirtyFifteen, FifteenThirty);
-    private static final TennisScore LoveFifteen = new GameScore("love-15", FifteenAll, LoveThirty);
-    private static final TennisScore FifteenLove = new GameScore("15-love", ThirtyLove, FifteenAll);
-    static final TennisScore LoveAll = new GameScore("love all", FifteenLove, LoveFifteen);
-
-    private final TennisScore onPlayerOneScored;
-    private final TennisScore onPlayerTwoScored;
     private final String description;
 
-    private GameScore(String description, TennisScore onPlayerOneScored, TennisScore onPlayerTwoScored) {
+    private GameScore(String description) {
         this.description = description;
-        this.onPlayerOneScored = onPlayerOneScored;
-        this.onPlayerTwoScored = onPlayerTwoScored;
     }
 
-    @Override
-    public TennisScore pointPlayerOne() {
-        return onPlayerOneScored;
+    public GameScore pointPlayerOne() throws CannotTransitionFromScore {
+        return getNextScore(playerOneScoreTransitions);
     }
 
-    @Override
-    public TennisScore pointPlayerTwo() {
-        return onPlayerTwoScored;
+    public GameScore pointPlayerTwo() throws CannotTransitionFromScore {
+        return getNextScore(playerTwoScoreTransitions);
+    }
+
+    private GameScore getNextScore(ImmutableMap<String, String> playerStates) throws CannotTransitionFromScore {
+        final String next = playerStates.get(this.description);
+        if (next == null) {
+            throw new CannotTransitionFromScore(this.description);
+        }
+        return new GameScore(next);
     }
 
     @Override
     public String toString() {
         return description;
+    }
+
+    public boolean someoneHasWon() {
+        return this.description.equals("Game player one")
+            || this.description.equals("Game player two");
+    }
+
+    private static class CannotTransitionFromScore extends Error {
+        CannotTransitionFromScore(String score) {
+            super("On point scored could not transition from score:" + score);
+        }
     }
 }
 
