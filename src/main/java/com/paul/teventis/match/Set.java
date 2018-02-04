@@ -16,8 +16,7 @@ public class Set {
     private int currentSet = 0;
     private List<String> sets = new ArrayList<>();
 
-    private final Consumer<List<String>> defaultToNoOp = s -> {};
-    private Consumer<List<String>> setSubscription = defaultToNoOp;
+    private List<Consumer<List<String>>> subscriptions = new ArrayList<>();
 
     public Set(Game game) {
         game.subscribeToScore(this::onGameScore);
@@ -45,7 +44,6 @@ public class Set {
             playerOneGames = 0;
             playerTwoGames = 0;
             currentSet++;
-            reportScore();
         }
     }
 
@@ -69,10 +67,11 @@ public class Set {
         } else {
             sets.set(currentSet, setScore());
         }
-        this.setSubscription.accept(ImmutableList.copyOf(sets));
+        final ImmutableList<String> scores = ImmutableList.copyOf(sets);
+        this.subscriptions.forEach(sub -> sub.accept(scores));
     }
 
     public void subscribeToSetScores(Consumer<List<String>> subscription) {
-        this.setSubscription = subscription;
+        this.subscriptions.add(subscription);
     }
 }

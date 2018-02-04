@@ -11,6 +11,7 @@ public class Match {
 
     private final Game game;
     private final Set set;
+    private Consumer<String> subscribeToMatchWon;
 
     public Match(EventStore eventStore, String matchId) {
 
@@ -21,6 +22,13 @@ public class Match {
         this.game = new Game();
         this.set = new Set(game);
 
+        this.set.subscribeToSetScores(this::onSetWon);
+    }
+
+    private void onSetWon(List<String> setScores) {
+        if (setScores.size() >= 3) {
+            subscribeToMatchWon.accept("Game, Set, and Match to player one");
+        }
     }
 
     private void when(Event event) {
@@ -37,5 +45,9 @@ public class Match {
 
     public void subscribeToWinningScores(Consumer<List<String>> subscription) {
         this.set.subscribeToSetScores(subscription);
+    }
+
+    public void subscribeToMatchWon(Consumer<String> subscription) {
+        this.subscribeToMatchWon = subscription;
     }
 }

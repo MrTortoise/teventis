@@ -63,7 +63,11 @@ public class SetsAreWon {
 
         playerOneWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("7-5", "0-0");
+        assertThat(this.reportedSetScore).containsExactly("7-5");
+
+        playerOneWinsGame(game);
+
+        assertThat(this.reportedSetScore).containsExactly("7-5", "1-0");
     }
     
     private void playerOneWinsSet(Game game) {
