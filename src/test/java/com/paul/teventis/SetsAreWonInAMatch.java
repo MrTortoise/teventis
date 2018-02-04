@@ -4,6 +4,8 @@ import com.paul.teventis.events.EventStore;
 import com.paul.teventis.game.PlayerOneScored;
 import com.paul.teventis.game.PlayerTwoScored;
 import com.paul.teventis.match.Match;
+import com.paul.teventis.match.Set;
+import com.paul.teventis.match.SetScore;
 import org.junit.Test;
 
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetsAreWonInAMatch {
-    private List<String> setScores;
+    private List<SetScore> setScores;
 
     @Test
     public void andItReportsAllSetsGamesScores() {
@@ -25,7 +27,7 @@ public class SetsAreWonInAMatch {
         playerOneWinsAGame(inMemoryEventStore, Match.streamNameFor(matchId));
         playerTwoWinsAGame(inMemoryEventStore, Match.streamNameFor(matchId));
 
-        assertThat(this.setScores).containsExactly("1-1");
+        assertThat(this.setScores).containsExactly(new SetScore(1, 1));
     }
 
     private void playerTwoWinsAGame(EventStore inMemoryEventStore, String streamName) {

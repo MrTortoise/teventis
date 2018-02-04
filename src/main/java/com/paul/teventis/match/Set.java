@@ -14,16 +14,12 @@ public class Set {
     private int playerTwoGames = 0;
     private int playerOneGames = 0;
     private int currentSet = 0;
-    private List<String> sets = new ArrayList<>();
+    private List<SetScore> sets = new ArrayList<>();
 
-    private List<Consumer<List<String>>> subscriptions = new ArrayList<>();
+    private List<Consumer<List<SetScore>>> subscriptions = new ArrayList<>();
 
     public Set(Game game) {
         game.subscribeToScore(this::onGameScore);
-    }
-
-    private String setScore() {
-        return String.format("%s-%s", playerOneGames, playerTwoGames);
     }
 
     private void onGameScore(String gameScore) {
@@ -62,16 +58,23 @@ public class Set {
     }
 
     private void reportScore() {
+        final SetScore setScore = new SetScore(playerOneGames, playerTwoGames);
         if (currentSet >= sets.size()) {
-            sets.add(currentSet, setScore());
+            sets.add(currentSet, setScore);
         } else {
-            sets.set(currentSet, setScore());
+            sets.set(currentSet, setScore);
         }
-        final ImmutableList<String> scores = ImmutableList.copyOf(sets);
+        updateSubscribers();
+    }
+
+    private void updateSubscribers() {
+        final ImmutableList<SetScore> scores = ImmutableList.copyOf(sets);
         this.subscriptions.forEach(sub -> sub.accept(scores));
     }
 
-    public void subscribeToSetScores(Consumer<List<String>> subscription) {
+    public void subscribeToSetScores(Consumer<List<SetScore>> subscription) {
         this.subscriptions.add(subscription);
+        updateSubscribers();
     }
+
 }

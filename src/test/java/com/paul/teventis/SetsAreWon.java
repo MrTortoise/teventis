@@ -4,6 +4,7 @@ import com.paul.teventis.game.Game;
 import com.paul.teventis.game.PlayerOneScored;
 import com.paul.teventis.game.PlayerTwoScored;
 import com.paul.teventis.match.Set;
+import com.paul.teventis.match.SetScore;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetsAreWon {
-    private List<String> reportedSetScore;
+    private List<SetScore> reportedSetScore;
 
     @Test
     public void byTheFirstPlayerToWinSixPoints() {
@@ -22,7 +23,7 @@ public class SetsAreWon {
         playerOneWinsSet(game);
         playerOneWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("6-0", "1-0");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(6, 0), new SetScore(1, 0));
     }
 
     @Test
@@ -35,7 +36,7 @@ public class SetsAreWon {
         playerTwoWinsSet(game);
         playerTwoWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("6-0", "0-6", "0-1");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(6, 0), new SetScore(0, 6), new SetScore(0, 1));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class SetsAreWon {
         playerTwoWinsGame(game);
         playerTwoWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("3-2");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(3, 2));
 
         playerOneWinsGame(game);
         playerTwoWinsGame(game);
@@ -59,15 +60,15 @@ public class SetsAreWon {
         playerOneWinsGame(game);
         playerOneWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("6-5");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(6, 5));
 
         playerOneWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("7-5");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(7, 5));
 
         playerOneWinsGame(game);
 
-        assertThat(this.reportedSetScore).containsExactly("7-5", "1-0");
+        assertThat(this.reportedSetScore).containsExactly(new SetScore(7, 5), new SetScore(1, 0));
     }
     
     private void playerOneWinsSet(Game game) {

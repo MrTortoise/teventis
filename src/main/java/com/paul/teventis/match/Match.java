@@ -6,6 +6,7 @@ import com.paul.teventis.game.Game;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Match {
 
@@ -25,10 +26,27 @@ public class Match {
         this.set.subscribeToSetScores(this::onSetWon);
     }
 
-    private void onSetWon(List<String> setScores) {
-        if (setScores.size() >= 3) {
+    private void onSetWon(List<SetScore> setScores) {
+
+        final Integer playerOneSetsWon = countPlayersSetsWon(setScores, ss -> ss.getPlayerOneGames() > ss.getPlayerTwoGames());
+
+        final Integer playerTwoSetsWon = countPlayersSetsWon(setScores, ss -> ss.getPlayerTwoGames() > ss.getPlayerOneGames());
+
+        if (playerOneSetsWon >= 3) {
             subscribeToMatchWon.accept("Game, Set, and Match to player one");
         }
+
+        if (playerTwoSetsWon >= 3) {
+            subscribeToMatchWon.accept("Game, Set, and Match to player two");
+        }
+    }
+
+    private int countPlayersSetsWon(List<SetScore> setScores, Function<SetScore, Boolean> didPlayerWinSet) {
+        return setScores
+                   .stream()
+                   .map(didPlayerWinSet)
+                   .mapToInt(p -> p ? 1 : 0)
+                   .sum();
     }
 
     private void when(Event event) {
@@ -43,7 +61,7 @@ public class Match {
         game.subscribeToScore(subscription);
     }
 
-    public void subscribeToWinningScores(Consumer<List<String>> subscription) {
+    public void subscribeToWinningScores(Consumer<List<SetScore>> subscription) {
         this.set.subscribeToSetScores(subscription);
     }
 

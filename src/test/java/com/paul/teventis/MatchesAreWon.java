@@ -5,10 +5,13 @@ import com.paul.teventis.events.EventStore;
 import com.paul.teventis.game.PlayerOneScored;
 import com.paul.teventis.game.PlayerTwoScored;
 import com.paul.teventis.match.Match;
+import com.paul.teventis.match.SetScore;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,51 +19,56 @@ public class MatchesAreWon {
     private String matchWon;
 
     @Test
-    public void ifOnePlayerWinsThreeSetsAndTheOtherNeverScores() throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void ifOnePlayerWinsThreeSetsAndTheOtherNeverScores() {
         final EventStore eventStore = new FakeEventStore();
         final String matchId = UUID.randomUUID().toString();
         final Match match = new Match(eventStore, matchId);
 
         match.subscribeToMatchWon(s -> matchWon = s);
 
-        playerWinsMatch(eventStore, matchId, PlayerOneScored.class);
+        final String streamName = Match.streamNameFor(matchId);
+        playerWinsSet(eventStore, streamName, PlayerOneScored::new);
+        playerWinsSet(eventStore, streamName, PlayerOneScored::new);
+        playerWinsSet(eventStore, streamName, PlayerOneScored::new);
 
         assertThat(this.matchWon).isEqualTo("Game, Set, and Match to player one");
     }
 
-//    @Test
-//    public void bestOfFiveOtherwise() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        final EventStore eventStore = new FakeEventStore();
-//        final String matchId = UUID.randomUUID().toString();
-//        final Match match = new Match(eventStore, matchId);
-//
-//        match.subscribeToMatchWon(s -> matchWon = s);
-//
-////        playerWinsSet(eventStore, matchId, PlayerOneScored.class);
-////        playerWinsSet(eventStore, matchId, PlayerTwoScored.class);
-////        playerWinsSet(eventStore, matchId, PlayerOneScored.class);
-////        playerWinsSet(eventStore, matchId, PlayerTwoScored.class);
-////        playerWinsSet(eventStore, matchId, PlayerOneScored.class);
-////        playerWinsSet(eventStore, matchId, PlayerOneScored.class);
-//
-//        assertThat(this.matchWon).isEqualTo("Game, Set, and Match to player one");
-//    }
+    @Test
+    public void bestOfFiveOtherwise() {
+        final EventStore eventStore = new FakeEventStore();
+        final String matchId = UUID.randomUUID().toString();
+        final Match match = new Match(eventStore, matchId);
 
-    private <T extends Event> void playerWinsMatch(EventStore eventStore, String matchId, Class<T> playerScored) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        for(int i = 0; i < 3; i++) {
-            playerWinsSet(eventStore, Match.streamNameFor(matchId), playerScored);
-        }
+        match.subscribeToMatchWon(s -> matchWon = s);
+
+        final String streamName = Match.streamNameFor(matchId);
+
+        playerWinsSet(eventStore, streamName, PlayerOneScored::new); // 1 0
+        playerWinsSet(eventStore, streamName, PlayerTwoScored::new); // 1 1
+        playerWinsSet(eventStore, streamName, PlayerOneScored::new); // 2 1
+
+        assertThat(this.matchWon).isNull();
+
+        playerWinsSet(eventStore, streamName, PlayerTwoScored::new); // 2 2
+        playerWinsSet(eventStore, streamName, PlayerTwoScored::new); // 2 3
+
+        assertThat(this.matchWon).isEqualTo("Game, Set, and Match to player two");
     }
 
-    private <T extends Event> void playerWinsSet(EventStore eventStore, String streamName, Class<T> playerScored) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        for(int i = 0; i < 6; i++) {
-            playerWinsGame(eventStore, streamName, playerScored);
-        }
+    private <T extends Event> void playerWinsSet(EventStore eventStore, String streamName, Supplier<T> playerScored) {
+        playerWinsGame(eventStore, streamName, playerScored);
+        playerWinsGame(eventStore, streamName, playerScored);
+        playerWinsGame(eventStore, streamName, playerScored);
+        playerWinsGame(eventStore, streamName, playerScored);
+        playerWinsGame(eventStore, streamName, playerScored);
+        playerWinsGame(eventStore, streamName, playerScored);
     }
 
-    private <T extends Event> void playerWinsGame(EventStore eventStore, String streamName, Class<T> eventClass) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        for (int i = 0; i < 4; i++) {
-            eventStore.write(streamName, eventClass.getDeclaredConstructor().newInstance());
-        }
+    private <T extends Event> void playerWinsGame(EventStore eventStore, String streamName, Supplier<T> playerScored) {
+        eventStore.write(streamName, playerScored.get());
+        eventStore.write(streamName, playerScored.get());
+        eventStore.write(streamName, playerScored.get());
+        eventStore.write(streamName, playerScored.get());
     }
 }
